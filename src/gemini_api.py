@@ -30,21 +30,17 @@ modelo = genai.GenerativeModel(model_name="gemini-2.0-flash-exp-image-generation
 # FUNÇÃO PARA GERAR IMAGEM (Stability)
 # ====================================
 def traduzir_prompt(prompt_pt):
+    # Usa Gemini para traduzir
     try:
-        prompt_gemini = f"Traduza para o inglês, apenas o texto traduzido, sem comentários extras: '{prompt_pt}'"
-        response = modelo.generate_content(prompt_gemini)
-        
-        if hasattr(response, 'text'):
-            return response.text.strip()
-        else:
-            texto_traduzido = ""
-            for part in getattr(response, "parts", []):
-                if hasattr(part, "text"):
-                    texto_traduzido += part.text.strip()
-            return texto_traduzido or prompt_pt  # fallback
+        response = modelo.generate_content(f"Traduza para o inglês: '{prompt_pt}'")
+        texto_traduzido = ""
+        for part in response.parts:
+            if hasattr(part, "text"):
+                texto_traduzido += part.text.strip()
+        return texto_traduzido
     except Exception as e:
         st.error(f"Erro ao traduzir o prompt: {e}")
-        return prompt_pt
+        return prompt_pt  # Retorna o original como fallback
     
 def gerar_imagem(prompt):
     prompt_en = traduzir_prompt(prompt)
