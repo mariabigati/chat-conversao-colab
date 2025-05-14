@@ -44,6 +44,7 @@ def traduzir_prompt(prompt_pt):
     
 def gerar_imagem(prompt):
     prompt_en = traduzir_prompt(prompt)
+    st.write("🔤 Prompt traduzido:", prompt_en)  # Para debug
 
     url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image"
     headers = {
@@ -51,23 +52,35 @@ def gerar_imagem(prompt):
         "Content-Type": "application/json",
     }
     data = {
-        "prompt": prompt_en,
-        "output_format": "png",
+        "text_prompts": [{"text": prompt_en}],
+        "cfg_scale": 7,
+        "height": 512,
+        "width": 512,
+        "samples": 1,
+        "steps": 30,
     }
 
     try:
-        response = requests.post(url, headers=headers, files={"none": ''}, data=data)
+        response = requests.post(url, headers=headers, json=data)
 
         if response.status_code == 200:
-            return Image.open(BytesIO(response.content))
+            resposta_json = response.json()
+            imagem_url = resposta_json["artifacts"][0]["url"]
+
+            # Baixa a imagem
+            imagem_response = requests.get(imagem_url)
+            if imagem_response.status_code == 200:
+                return Image.open(BytesIO(imagem_response.content))
+            else:
+                st.error(f"Erro ao baixar imagem: {imagem_response.status_code}")
+                return None
         else:
-            st.error(f"Erro {response.status_code}: {response.json()}")
+            st.error(f"Erro {response.status_code}: {response.text}")
             return None
 
     except Exception as e:
         st.error(f"Erro ao gerar imagem com Stability: {e}")
         return None
-
 # ===================================
 # FUNÇÃO PARA GERAR TEXTO (Gemini AI)
 # ===================================
