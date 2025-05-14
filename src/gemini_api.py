@@ -52,7 +52,7 @@ def gerar_imagem(prompt):
     }
     data = {
         "prompt": prompt_en,
-        "output_format": "webp",
+        "output_format": "png",
     }
 
     try:
