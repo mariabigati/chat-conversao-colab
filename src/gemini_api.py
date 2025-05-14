@@ -44,12 +44,13 @@ def traduzir_prompt(prompt_pt):
     
 def gerar_imagem(prompt):
     prompt_en = traduzir_prompt(prompt)
-    st.write("🔤 Prompt traduzido:", prompt_en)  # Para debug
+    st.write("🔤 Prompt traduzido:", prompt_en)
 
     url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image"
     headers = {
         "authorization": f"Bearer {STABILITY_API_KEY}",
         "Content-Type": "application/json",
+        "Accept": "image/png"
     }
     data = {
         "text_prompts": [{"text": prompt_en}],
@@ -57,23 +58,14 @@ def gerar_imagem(prompt):
         "height": 1024,
         "width": 1024,
         "samples": 1,
-        "steps": 30,
+        "steps": 30
     }
 
     try:
         response = requests.post(url, headers=headers, json=data)
 
         if response.status_code == 200:
-            resposta_json = response.json()
-            imagem_url = resposta_json["artifacts"][0]["url"]
-
-            # Baixa a imagem
-            imagem_response = requests.get(imagem_url)
-            if imagem_response.status_code == 200:
-                return Image.open(BytesIO(imagem_response.content))
-            else:
-                st.error(f"Erro ao baixar imagem: {imagem_response.status_code}")
-                return None
+            return Image.open(BytesIO(response.content))
         else:
             st.error(f"Erro {response.status_code}: {response.text}")
             return None
