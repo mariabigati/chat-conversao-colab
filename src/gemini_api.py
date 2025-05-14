@@ -45,7 +45,7 @@ def traduzir_prompt(prompt_pt):
 def gerar_imagem(prompt):
     prompt_en = traduzir_prompt(prompt)
 
-    url = "https://api.stability.ai/v2beta/stable-image/generate/ultra"
+    url = "https://api.stability.ai/v2beta/stable-image/generate/core"
     headers = {
         "authorization": f"Bearer {STABILITY_API_KEY}",
         "accept": "image/*",
