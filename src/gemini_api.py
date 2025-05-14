@@ -48,7 +48,7 @@ def gerar_imagem(prompt):
     url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image"
     headers = {
         "authorization": f"Bearer {STABILITY_API_KEY}",
-        "accept": "image/*",
+        "Content-Type": "application/json",
     }
     data = {
         "prompt": prompt_en,
