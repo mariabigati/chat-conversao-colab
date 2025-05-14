@@ -1,6 +1,5 @@
 google-generativeai
 python-dotenv
 streamlit
-PIL
-io
+Pillow
 requests
